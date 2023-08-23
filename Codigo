@@ -1,0 +1,347 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <time.h> 
+
+
+char tabuleiro[3][3]; // Matriz do Tabuleiro
+
+void iniciarJogo(), exibirTabuleiro(), limparTabuleiro(), exibirInstrucoes(), exibirPlacar(),iniciarMenu(); // Declaração das funções
+
+int placar1=0, placar2=0, rodada= 0, ponto1= 0, ponto2=0; //Placar por rodadas e pontos por vitórias
+char player1[30],player2[30];  // Nome dos jogadores
+clock_t tempoIncial, tempoFinal; //Variaveis de tempo;
+
+int encerrarJogo(){
+	printf("\nObrigado por jogar!!\n");
+	exit(0); // Fechar o jogo
+}
+
+void limparTela(){ 
+	system("cls"); //Comando do Windows para limpar a tela
+}
+
+void delay(int milliseconds) { //Essa função serve pra esperar até que o tempo seja atingido
+    clock_t comecarTempo = clock();
+    while ((clock() - comecarTempo) * 1000 / CLOCKS_PER_SEC < milliseconds) {
+    }
+}
+
+bool tabuleiroCheio() { // Verifica se o tabuleiro está cheio
+	int i,j;
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            if (tabuleiro[i][j] == ' ')
+                return false; // Se não, retorna falso
+        }
+    }
+    return true; // Se sim, retorna verdadeiro
+}
+
+bool ganhou(char player) { // Percorre a matriz conferindo se algum jogador ganhou
+	int i;
+    for (i = 0; i < 3; i++) {
+        if (tabuleiro[i][0] == player && tabuleiro[i][1] == player && tabuleiro[i][2] == player)
+            return true;
+        if (tabuleiro[0][i] == player && tabuleiro[1][i] == player && tabuleiro[2][i] == player)
+            return true;
+    }
+    if (tabuleiro[0][0] == player && tabuleiro[1][1] == player && tabuleiro[2][2] == player)
+        return true;
+    if (tabuleiro[0][2] == player && tabuleiro[1][1] == player && tabuleiro[2][0] == player)
+        return true;
+    return false;
+}
+
+
+//aaaa
+
+
+void exibirTabuleiro(){  //Exibe o tabuleiro...
+	limparTela();
+	
+	printf("\n"); //Exibindo...
+    printf("   1   2   3\n");
+    printf("A  %c | %c | %c \n", tabuleiro[0][0], tabuleiro[0][1], tabuleiro[0][2]);
+    printf("  -----------\n");
+    printf("B  %c | %c | %c \n", tabuleiro[1][0], tabuleiro[1][1], tabuleiro[1][2]);
+    printf("  -----------\n");
+    printf("C  %c | %c | %c \n", tabuleiro[2][0], tabuleiro[2][1], tabuleiro[2][2]);
+    printf("\n");
+};
+
+
+void limparTabuleiro(){  //Essa função serve para garantir que não vai ter nenhuma outra informação armazenada na memória.
+	 int i, j;            
+    for (i = 0; i < 3; i++) {
+        for (j = 0; j < 3; j++) {
+            tabuleiro[i][j] = ' ';
+        }
+    }
+};
+
+
+void exibirInstrucoes(){ // Exibe as instruções do jogo
+	limparTela();
+	char resposta;
+    
+    printf("\t**Instrucoes:**\n");
+    printf("- No tabuleiro, cada posicao eh identificada por uma letra (A, B ou C) para a linha\n");
+    printf("  e um numero (1, 2 ou 3) para a coluna.\n");
+    printf("- Para pausar o jogo, voce devera digitar a letra P no momento de informar a linha ou a coluna.\n");
+    printf("- Voce tera 20 segundos para fazer sua jogada. Se o tempo esgotar, sua vez sera pulada.\n");
+    printf("- O jogador 1 jogara como X e o jogador 2 jogara como O, nao havera alternacao de simbolos.\n");
+	printf("- Para ganhar, voce precisa vencar duas ou mais rodadas,a cada empate havera mais uma rodada.\n");
+    printf("\n\tDivirta-se e que venca o melhor estrategista!\n");
+
+	
+	//Confere se os jogadores querem retornar ao menu principal;
+	printf("\nDeseja retornar ao menu principal? (S/N)\n");
+	scanf(" %c", &resposta);
+	switch(resposta){
+		case 's':
+        case 'S':
+        	iniciarMenu();
+        	break;
+        case 'n':
+  	    case 'N':
+			encerrarJogo();
+	}
+}
+
+
+void exibirPlacar(){ //Exibe as vitórias dos jogadores
+	limparTela();
+	char resposta; 
+	printf("\t**Placar**\n");
+    printf("%s (%c): %d\n", player1, 'X', ponto1);
+    printf("%s (%c): %d\n", player2, 'O', ponto2);
+    
+	//Confere se os jogadores querem retornar ao menu principal
+    printf("\nDeseja retornar ao menu principal? (S/N)\n");
+	scanf(" %c", &resposta);
+	switch(resposta){
+		case 's':
+        case 'S':
+        	iniciarMenu();
+        	break;
+        case 'n':
+  	    case 'N':
+    		printf("\nObrigado por jogar!!\n");
+			encerrarJogo();
+	}
+}
+
+
+void iniciarMenu(){ // Função MENU
+	limparTela();
+	int ID;
+	printf("\nBem-vindo ao Jogo da Velha!\n\n");
+    printf("Neste jogo classico, voce e um colega irao disputar para ver quem consegue formar\n");
+    printf("primeiro uma linha horizontal, vertical ou diagonal com seus simbolos (X ou O).\n");
+    printf("Este jogo serve para desafiar suas habilidades estrategicas!\n\n");
+	
+	printf("\t**Menu:**\n");
+	printf("\nDigite 1 para inicar o jogo\n");
+	printf("Digite 2 para exibir as instrucoes\n");
+	printf("Digite 3 para exibir a pontuacao\n");
+	printf("Digite 4 para sair do jogo\n");
+	scanf("%d", &ID);
+	
+	switch(ID){
+		case 1: // Inicia o jogo
+			iniciarJogo();
+			break;
+		case 2: // Exibe as instruções
+			exibirInstrucoes();
+			break;
+		case 3:  // Exibe o placar
+			exibirPlacar();
+			break;
+		case 4:  // Encerra o jogo
+			encerrarJogo();
+			break;
+		default:  // Em caso de resposta errada
+			printf("Tente novamente\n");
+			limparTela();
+			iniciarMenu();
+			
+	}
+}
+
+void iniciarJogo(){
+	limparTela();
+	limparTabuleiro();
+	exibirTabuleiro();
+
+    int jogadorAtual = 1;  //  Jogador atual
+    char jogadorChar = 'X'; // Simbolo atual
+
+    while (true&&rodada!=3) {
+		printf("\nVez de %s (%c)\n", (jogadorAtual == 1) ? player1 : player2, jogadorChar); //Exibe a vez do jogador atual e o simbolo
+
+       int linha=4, coluna=4; // Atribuindo e definindo a linha e coluna
+       char letra, pause;     // Variaveis de auxilio
+       tempoIncial = clock(); // Inicio da contagem
+       
+        printf("Digite a linha (A, B ou C): "); // Recebendo a linha
+        scanf(" %c", &letra);
+        
+        if(letra=='p'||letra=='P'){                  //Verificando se o jogo foi pausado
+			printf("\n\tJogo Pausado!\n");
+			int verificador=0;
+			do{
+				printf("\nDeseja retornar o jogo? Digite: S\nPara encerrar o jogo digite: N\n");
+				scanf(" %c", &letra);
+				if(letra=='S'||letra=='s'){ //Saindo do laco
+					verificador=1;			
+				}
+				if(letra=='N'||letra=='n'){ //Encerrando o jogo
+				   	encerrarJogo();				
+				}
+			}while(verificador==0);
+			
+            tempoIncial = clock();
+			continue; //Continuando o jogo
+		}
+        
+		else if(letra=='A'||letra=='a'){ //Se não, atribuindo a linha 
+			linha = 0;
+		}
+		else if(letra=='B'||letra=='b'){ //Se não, atribuindo a linha 
+			linha = 1;
+		}
+		else if(letra=='C'||letra=='c'){ //Se não, atribuindo a linha 
+			linha = 2;
+		}
+		else{
+			linha = -1; //Alterando o valor da linha em caso de movimento errado
+		}
+		
+        printf("Digite a coluna (1, 2 ou 3): "); // Recebendo a coluna
+        scanf(" %c", &pause);
+        
+    	if(pause=='p'||pause=='P'){                  //Verificando se o jogo foi pausado
+			printf("\n\tJogo Pausado!\n");
+			int verificador=0;
+			do{
+				printf("\nDeseja retornar o jogo? Digite: S\nPara encerrar o jogo digite: N\n");
+				scanf(" %c", &pause);
+				if(pause=='S'||pause=='s'){ //Saindo do laco
+					verificador=1;			
+				}	
+				if(pause=='N'||pause=='n'){ //Encerrando o jogo	
+					encerrarJogo();			
+				}		
+			}while(verificador==0);
+			
+            tempoIncial = clock();
+			continue; //Continuando o jogo
+		}
+		else if(pause=='1'){ //se não, atribuindo os valores da coluna 
+			coluna=0;
+		}
+		else if(pause=='2'){ //se não, atribuindo os valores da coluna
+			coluna=1;
+		}
+		else if(pause=='3'){ //se não, atribuindo os valores da coluna 
+			coluna=2;
+		}
+		
+		tempoFinal = clock(); // Registra o tempo final
+        double durancao = (double)(tempoFinal - tempoIncial) / CLOCKS_PER_SEC; //Registrar duração
+        double tempoRestante = 20.0 - durancao; //  Registrar tempo restante
+
+        if (tempoRestante < 0.0) { // Verificar se ainda há tempo ou não, se não tiver, então
+        	limparTela();
+        	exibirTabuleiro();
+            printf("\nTempo esgotado! Vez pulada.\n");
+            // Alternar jogador
+            jogadorAtual = (jogadorAtual == 1) ? 2 : 1;
+            jogadorChar = (jogadorChar == 'X') ? 'O' : 'X';
+            continue; // Pular para o próximo loop
+        }
+
+    
+		//Confere se o movimento foi correto
+        if (linha < 0 || linha >= 3 || coluna < 0 || coluna >= 3 || tabuleiro[linha][coluna] != ' ') {
+            limparTela();
+            exibirTabuleiro();
+			printf("\nMovimento invalido. Tente novamente.\n");
+            continue; // Volta a jogado caso seja realmente incorreto
+        }
+
+        tabuleiro[linha][coluna] = jogadorChar; // Adiciona o simbolo do jogador ao tabuleiro
+        exibirTabuleiro(); // Exibe o tabuleuiro
+
+        if (ganhou(jogadorChar)) { //Confere se o jogador venceu a rodada
+            printf("%s (%c) venceu a %d rodada!\n", (jogadorAtual == 1) ? player1 : player2, jogadorChar, rodada+1);
+           
+	 	 	 if (jogadorAtual == 1){//Confere se é o jogador 1
+				placar1++; // Adiciona o placar 
+				rodada++; // Adiciona mais uma rodada
+				if(rodada ==3){ // Confere se ele venceu 3 rodadas
+					if(placar1>placar2){ // Confere o jogador com mais placar
+						printf("\nJOGADOR %s (X) GANHOUU!!", player1);
+						delay(5000); // Espera 5 segundos
+						ponto1 += 1; // Adiciona o ponto de pontuação
+						iniciarMenu(); // Inicia o menu
+					}
+					else{
+						printf("\nJOGADOR %s (O) GANHOUU!!", player2);
+						delay(5000); // Espera 5 segundos
+						ponto2 += 1; // Adiciona o ponto de pontuação
+						iniciarMenu(); // Inicia o menu
+					}
+				}
+				delay(5000); // Espera 5 segundos
+				iniciarJogo(); // inicia o jogo
+				}
+				
+            else{ //É o jogador 2
+	   			rodada++; // Adiciona o placar 
+				placar2++; // Adiciona mais uma rodada
+			
+				if(rodada ==3){ // Confere se ele venceu 3 rodadas
+					if(placar1>placar2){ 
+						printf("\nJOGADOR %s (X) GANHOUU!!", player1);
+						delay(5000); // Espera 5 segundos
+						ponto1 += 1; // Adiciona o ponto de pontuação
+						iniciarMenu(); // Inicia o menu
+					}
+					else{
+						printf("\nJOGADOR %s (O) GANHOUU!!", player2);
+						delay(5000); // Espera 5 segundos
+						ponto1 += 1; // Adiciona o ponto de pontuação
+						iniciarMenu(); // Inicia o menu
+					}
+				}
+				delay(5000); // Espera 5 segundos
+				iniciarJogo();
+			}
+			
+        } 
+		else if (tabuleiroCheio()) { // Verifica se o tabuleiro tá cheio pra declarar empate 
+            printf("Empate! Jogue outra rodada!\n");
+            delay(5000);
+            iniciarJogo();
+        }
+		
+        jogadorAtual = (jogadorAtual == 1) ? 2 : 1;     // Trocando o jogador atual
+        jogadorChar = (jogadorChar == 'X') ? 'O' : 'X'; // Trocando o simbolo atual
+    }
+
+}
+
+
+
+int main(){
+	printf("\nATENCAO: O primeiro jogador sera o 'X'!\n");
+	printf("Digite o nome do jogador 1: "); 
+    scanf("%s", player1); // Atribuicao do nome do jogador1
+    printf("\nATENCAO: O segundo jogador sera o 'O'!\n");
+    printf("Digite o nome do jogador 2: ");
+    scanf("%s", player2);// Atribuicao do nome do jogador2
+	iniciarMenu();
+}
